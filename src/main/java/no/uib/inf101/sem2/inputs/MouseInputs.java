@@ -1,24 +1,22 @@
 package no.uib.inf101.sem2.inputs;
 
+import static no.uib.inf101.sem2.constants.Menu.MenuLayout.*;
+
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import no.uib.inf101.sem2.gamestates.GameStates;
-import no.uib.inf101.sem2.view.GamePanel;
-import static no.uib.inf101.sem2.ui.MenuButton.ButtonHitbox.*;
+import no.uib.inf101.sem2.main.GamePanel;
 
 public class MouseInputs implements MouseListener {
     private GamePanel gamePanel;
-    Cursor cursor;
-    //Player player;
    
     GameStates gamestates;
 
 
     public MouseInputs(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
     }
 
@@ -32,8 +30,8 @@ public class MouseInputs implements MouseListener {
         int mouseX = e.getX();
         int mouseY = e.getY();
 
-        // play button
         switch(GameStates.state) {
+            // Back button
             case HOW_TO:
             if(mouseX >= BACK_X && mouseX <= BACK_X + BACK_WIDTH) {
                 if(mouseY >= BACK_Y && mouseY <= BACK_Y + BACK_HEIGHT) {
@@ -43,11 +41,13 @@ public class MouseInputs implements MouseListener {
                 break;
             
             case MENU:
-                if(mouseX >= BUTTON_START_Y && mouseX <= PLAY_X + PLAY_WIDTH) {
-                    if(mouseY >= BUTTON_START_Y && mouseY <= BUTTON_START_Y + PLAY_HEIGHT) {
+                // play button
+                if(mouseX >= PLAY_Y && mouseX <= PLAY_X + PLAY_WIDTH) {
+                    if(mouseY >= PLAY_Y && mouseY <= PLAY_Y + PLAY_HEIGHT) {
                         GameStates.state = GameStates.ACTIVE_GAME;
                     }
                 } 
+                // how to button
                 if(mouseX >= HOW_TO_X && mouseX <= HOW_TO_X + HOW_TO_WIDTH ) {
                     if(mouseY >= HOW_TO_Y && mouseY <= HOW_TO_Y + HOW_TO_HEIGHT) {
                         GameStates.state = GameStates.HOW_TO;

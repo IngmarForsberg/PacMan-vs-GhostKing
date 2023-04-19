@@ -1,4 +1,6 @@
-package no.uib.inf101.sem2.inGameObjects.player;
+package no.uib.inf101.sem2.inGameObjects.interfaces;
+
+import java.awt.geom.Rectangle2D;
 
 public interface PlayerMovement {
     
@@ -14,10 +16,5 @@ public interface PlayerMovement {
      */
     void setCrouch(boolean crouch);
 
-    /**
-     * true if player is on ground, false if in air
-     * @return
-     */
-    boolean playerOnGround();
 }
     

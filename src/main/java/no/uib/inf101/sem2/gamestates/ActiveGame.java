@@ -1,7 +1,6 @@
 package no.uib.inf101.sem2.gamestates;
 
-import no.uib.inf101.sem2.view.Game;
-import static no.uib.inf101.sem2.constants.ObjectConstants.ObjectDimensions.*;
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 import static no.uib.inf101.sem2.constants.sprites.SpritesPNG.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,14 +8,15 @@ import static no.uib.inf101.sem2.constants.sprites.ItemSprite.ItemType.*;
 import no.uib.inf101.sem2.inGameObjects.ghosts.Ghost;
 import no.uib.inf101.sem2.inGameObjects.items.Items;
 import no.uib.inf101.sem2.inGameObjects.ghosts.GhostKing;
+import no.uib.inf101.sem2.inGameObjects.interfaces.StateMethods;
 import no.uib.inf101.sem2.inGameObjects.player.Player;
-import no.uib.inf101.sem2.terrain.Ground;
+import no.uib.inf101.sem2.inGameObjects.terrain.Ground;
+import no.uib.inf101.sem2.main.Game;
+
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import static no.uib.inf101.sem2.estethics.Fonts.*;
 
 public class ActiveGame extends State implements StateMethods {
@@ -31,10 +31,7 @@ public class ActiveGame extends State implements StateMethods {
     private ArrayList<Integer> lifeList;
     private ArrayList<Integer> coinList;
     private Ground ground;
-
     private boolean isNewHighscore;
-
-    private static final float SCORE_TICK_INTERVAL = 0.2f; //0.2 seconds between score tick
     
     public ActiveGame(Game game) {
         super(game);
@@ -42,13 +39,51 @@ public class ActiveGame extends State implements StateMethods {
     }
 
     private void initGameObjects() {
-        player = new Player(PLAYER_START_X_POSITION, GROUND_Y_POSITION-50, PLAYER_WIDTH, PLAYER_HEIGHT, game);
+        player = new Player(PLAYER_START_X_POSITION, PLAYER_START_Y_POSITION, PLAYER_WIDTH, PLAYER_HEIGHT, game);
         ghostKing = new GhostKing(GHOST_KING_X, GHOST_KING_Y, GHOST_KING_WIDTH, GHOST_KING_HEIGHT, game); 
-        ground = new Ground(-20f, GROUND_Y_POSITION + player.getHeight(), GAME_WIDTH + 100f, (float)10, game);
+        ground = new Ground(GROUND_START_X, GROUND_Y_POSITION , GROUND_WIDTH, GROUND_HEIGHT, game);
         createItemList();
         createGhosts();
         defaultLife(STARTING_LIFE);
         coinList = new ArrayList<>();
+    }
+    @Override
+    public void update() {
+        updateScoreTick(1);
+        player.update(); 
+        ghostKing.update();
+            
+        for(Items item : itemsList) {
+            item.update();
+        } 
+                
+        for(Ghost ghost : ghostList) {
+            ghost.update();
+        }
+    
+        resetItems();
+        resetGhosts(); 
+
+        if(gameOver()) {
+            GameStates.state = GameStates.GAME_OVER;
+        }
+        difficultyUpdate();
+    }
+    @Override
+    public void draw(Graphics g) {
+        ground.draw(g);
+        ghostKing.draw(g);
+        for(Ghost ghost : ghostList) {
+             ghost.draw(g);
+        } 
+        player.draw(g);
+    
+        for(Items item : itemsList) {
+             item.draw(g);
+        }
+        lifeCheck(g);
+        coinCheck(g);
+        createScoreLabel(g);
     }
 
     /**
@@ -75,12 +110,12 @@ public class ActiveGame extends State implements StateMethods {
 
     private float randomGhostYPosition() {
         // returns a random y position of the two possible positions the ghosts have
-        float[] randomYValues = {GHOST_BOTTOM_POSTION, GHOST_TOP_POSITION};
+        float[] randomYValues = {GHOST_BOTTOM_Y, GHOST_TOP_Y};
         return randomYValues[new Random().nextInt(randomYValues.length)];
     }
 
     private void createItems(int itemType, float xMax,float xMin) {
-        // the item's starting position is always passed the width of the frame
+        // the item's starting position is always beyond the width of the frame
         float startX = GAME_WIDTH + randomXPosition(xMax, xMin);
         
         // the loop creates NUM_ITEMS amount of items, all who have a random distance between eachother
@@ -93,7 +128,7 @@ public class ActiveGame extends State implements StateMethods {
     } 
 
 
-    private void createItemList() {
+    public void createItemList() {
         itemsList = new ArrayList<>(); 
         // when the program starts, the different items are added to the item list
         createItems(COIN, COIN_MAX_X, COIN_MIN_X);
@@ -122,18 +157,39 @@ public class ActiveGame extends State implements StateMethods {
     public ArrayList<Ghost> getGhostList() {
         return ghostList;
     } 
+
+    private float distanceUpdate() {
+        // returns the distance multipler for the different difficulites
+        // as the speed increases, we also want the distance between the ghosts and items to increase
+        if(Difficulty.difficulty == Difficulty.MEDIUM) {
+            return MEDIUM_DISTANCE_MULTIPLIER;
+        }
+        else if(Difficulty.difficulty == Difficulty.HARD) {
+            return HARD_DISTANCE_MULTIPLIER;
+        }
+        else {
+            return 1;
+        }
+    }
+    /**
+     * 
+     * @return the itemlist
+     */
+    public ArrayList<Items> getItemList() {
+        return itemsList;
+    }
    
     
-    private boolean gameOver() {
+    public boolean gameOver() {
         // Every time the player collides with a ghost, it removes a life from the life list.
-        // If ghost king collides with player, and there are no lives left, the game is over.
-        if(ghostKing.collisionDetected(player.getHitBox()) && lifeList.isEmpty()) {
+        // If ghost king collides with player, and there are only one life left, the game is over.
+        if(collisionDetected(player.getHitBox(), ghostKing.getHitBox()) && lifeList.size() == 1) {
             return true;
         }
         return false;
     }
 
-    private void resetItems() {
+    public void resetItems() {
         // the method starts with defining the item with the largest x value
         // this is the last item to enter the frame
         float greatestX = 0;
@@ -149,18 +205,18 @@ public class ActiveGame extends State implements StateMethods {
         // the new x position is a random distance from the last item in the game
         // the item with the new position is now the last item
         for(Items item : itemsList) {
-            if(item.getX() + ITEM_WIDTH < 0 || item.collisionDetected(player.getHitBox())) {
+            if(item.getX() + ITEM_WIDTH < 0 || collisionDetected(player.getHitBox(), item.getHitBox())) {
                 switch(item.getItemType()) {
                 case COIN:
-                    item.setX(lastItem.getX() + randomXPosition(COIN_MAX_X, COIN_MIN_X));
+                    item.setX(lastItem.getX() + randomXPosition(COIN_MAX_X, COIN_MIN_X)*distanceUpdate());
                     lastItem = item;
         
                 case ROCKET:
-                    item.setX(lastItem.getX() + randomXPosition(ROCKET_MAX_X, ROCKET_MIN_X));
+                    item.setX(lastItem.getX() + randomXPosition(ROCKET_MAX_X, ROCKET_MIN_X)*distanceUpdate());
                     lastItem = item;
     
                 case HEART:
-                    item.setX(lastItem.getX() + randomXPosition(HEART_MAX_X, HEART_MIN_X));
+                    item.setX(lastItem.getX() + randomXPosition(HEART_MAX_X, HEART_MIN_X)*distanceUpdate());
                     lastItem = item;
     
                 }
@@ -189,27 +245,15 @@ public class ActiveGame extends State implements StateMethods {
         }
     }
 
-    @Override
-    public void update() {
-        
-        updateScoreTick(1);
-        
-        player.update(); 
-        ghostKing.update();
-            
-        for(Items item : itemsList) {
-            item.update();
-        } 
-                
-        for(Ghost ghost : ghostList) {
-            ghost.update();
-        }
     
-        resetItems();
-        resetGhosts(); 
 
-        if(gameOver()) {
-            GameStates.state = GameStates.GAME_OVER;
+    private void difficultyUpdate() {
+        // the score decides the game difficulty
+        if(score >= MEDIUM_SCORE_THRESHOLD) {
+            Difficulty.difficulty = Difficulty.MEDIUM;
+        }
+        else if(score >= HARD_SCORE_THRESHOLD) {
+            Difficulty.difficulty = Difficulty.HARD;
         }
     }
 
@@ -254,30 +298,8 @@ public class ActiveGame extends State implements StateMethods {
         
     }
 
-    @Override
-    public void draw(Graphics g) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'draw'");
-    }
 
-    @Override
-    public void render(Graphics g) {
-       
-        ground.draw(g);
-        ghostKing.draw(g);
-        for(Ghost ghost : ghostList) {
-             ghost.draw(g);
-        } 
-        player.draw(g);
     
-        for(Items item : itemsList) {
-             item.draw(g);
-        }
-        lifeCheck(g);
-        coinCheck(g);
-        createScoreLabel(g);
-    
-    }
 
     /**
      * resets the game to default values
@@ -286,18 +308,66 @@ public class ActiveGame extends State implements StateMethods {
         initGameObjects();
         setScore(0);
         GameStates.state = GameStates.ACTIVE_GAME;
-       
+        Difficulty.difficulty = Difficulty.EASY;
     } 
 
    
     private void createScoreLabel(Graphics g) { 
-        // draws the strings that show score and highscore
+        // draws the strings which show score and highscore
         g.setColor(Color.YELLOW);
-        g.setFont(customFont().deriveFont(20f));
-        g.drawString("Score: " + score + "   Highscore: " + highScore, 400,50 );
+        g.setFont(customFont().deriveFont(8*SCALE));
+        g.drawString("Score: " + score + "   Highscore: " + highScore, (int)(160*SCALE), (int)(20*SCALE) );
     }
     
+    public void lifeCheck(Graphics g) {
+        // creates a heart image with the number of lives left, which are displayed on screen
+        BufferedImage heartImage = getSprite(ITEM_SPRITE).getSubimage(0, 2*ITEM_PIXEL_HEIGHT, ITEM_PIXEL_WIDTH, ITEM_PIXEL_HEIGHT);
+        g.drawImage(heartImage, (int)(GAME_WIDTH - 80*SCALE), (int) (20*SCALE), (int)(2*SCALE*ITEM_PIXEL_WIDTH), (int)(2*SCALE*ITEM_PIXEL_HEIGHT), null);
+        g.setColor(Color.RED);
+        g.setFont(new Font("Verdana", Font.BOLD, (int)SCALE*10));
+        g.drawString("x " + lifeList.size(), (int)(GAME_WIDTH - 30*SCALE), (int)(55*SCALE));
+    }
+    public void coinCheck(Graphics g) {
+        // creates a coin image with the number of coins collected, which are displayed on screen
+        BufferedImage heartImage = getSprite(ITEM_SPRITE).getSubimage(0, 0, ITEM_PIXEL_WIDTH, ITEM_PIXEL_HEIGHT);
+        g.drawImage(heartImage, (int)(GAME_WIDTH - 80*SCALE), (int) (48*SCALE), (int)(2*SCALE*ITEM_PIXEL_WIDTH), (int)(2*SCALE*ITEM_PIXEL_HEIGHT), null);
+        g.setColor(new Color(255, 204,51));
+        g.setFont(new Font("Verdana", Font.BOLD, (int)SCALE*10));
+        g.drawString("x " + coinList.size(), (int)(GAME_WIDTH - 30*SCALE), (int)(83*SCALE));
+    }
 
+    /**
+     * 
+     * @return the arraylist of coins collected
+     */
+    public ArrayList<Integer> getCoinList() {
+        return coinList;
+    }
+
+    /**
+     * 
+     * @return the arraylist with number of lives left
+     */
+    public ArrayList<Integer> getLifeList() {
+        return lifeList;
+
+    } 
+
+    /**
+     * 
+     * @return the ghostking object
+     */
+    public GhostKing getGhostKing() {
+        return ghostKing;
+    } 
+    
+    /**
+     *
+     * @return the Ground object
+     */
+    public Ground getGround() {
+        return ground;
+    }   
     /**
      * 
      * @return the player object
@@ -321,48 +391,6 @@ public class ActiveGame extends State implements StateMethods {
     public void setScore(int value) {
         this.score = value;
     } 
-    
-    /**
-     *
-     * @return the Ground object
-     */
-    public Ground getGround() {
-        return ground;
-    }  
 
-
-    public void lifeCheck(Graphics g) {
-        // creates a heart image with the number of lives left, which are displayed on screen
-        BufferedImage heartImage = getSprite(ITEM_SPRITE).getSubimage(0, 2*PIXEL_HEIGHT, PIXEL_WIDTH, PIXEL_HEIGHT);
-        g.drawImage(heartImage, (int)(GAME_WIDTH - 200), (int) 50, (int)4*PIXEL_WIDTH, (int)4*PIXEL_HEIGHT, null);
-        g.setColor(Color.RED);
-        g.setFont(new Font("Verdana", Font.BOLD, (int)SCALE*10));
-        g.drawString("x " + lifeList.size(), (int)GAME_WIDTH - 100, (int)GAME_HEIGHT*1/5);
-    }
-    public void coinCheck(Graphics g) {
-        // creates a coin image with the number of coins collected, which are displayed on screen
-        BufferedImage heartImage = getSprite(ITEM_SPRITE).getSubimage(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
-        g.drawImage(heartImage, (int)(GAME_WIDTH - 200), (int) 120, (int)4*PIXEL_WIDTH, (int)4*PIXEL_HEIGHT, null);
-        g.setColor(new Color(255, 204,51));
-        g.setFont(new Font("Verdana", Font.BOLD, (int)SCALE*10));
-        g.drawString("x " + coinList.size(), (int)GAME_WIDTH - 100, (int)GAME_HEIGHT*1/5 + 70);
-    }
-
-    /**
-     * 
-     * @return the arraylist of coins collected
-     */
-    public ArrayList<Integer> getCoinList() {
-        return coinList;
-    }
-
-    /**
-     * 
-     * @return the arraylist with number of lives left
-     */
-    public ArrayList<Integer> getLifeList() {
-        return lifeList;
-
-    } 
 
 }

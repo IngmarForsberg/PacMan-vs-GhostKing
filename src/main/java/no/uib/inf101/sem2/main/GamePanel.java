@@ -1,4 +1,4 @@
-package no.uib.inf101.sem2.view;
+package no.uib.inf101.sem2.main;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -6,7 +6,7 @@ import no.uib.inf101.sem2.gamestates.GameStates;
 import no.uib.inf101.sem2.inputs.KeyBoardInputs;
 import no.uib.inf101.sem2.inputs.MouseInputs;
 
-import static no.uib.inf101.sem2.constants.ObjectConstants.ObjectDimensions.*;
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class GamePanel extends JPanel{
         this.game = game;
         setPreferredSize(SIZE);
         setBackground(Color.BLACK);
-        addKeyListener(new KeyBoardInputs(this, game.activeGame().getPlayer()));
+        addKeyListener(new KeyBoardInputs(this));
         addMouseListener(new MouseInputs(this));
         setFocusable(true);
         

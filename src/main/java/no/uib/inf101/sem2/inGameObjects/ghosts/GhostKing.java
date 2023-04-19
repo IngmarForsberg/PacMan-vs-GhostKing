@@ -1,26 +1,20 @@
 package no.uib.inf101.sem2.inGameObjects.ghosts;
 
-import no.uib.inf101.sem2.view.Game;
-
-import static no.uib.inf101.sem2.constants.ObjectConstants.ObjectDimensions.*;
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 import static no.uib.inf101.sem2.constants.sprites.GhostKingSprite.GhostKingAction.*;
 import static no.uib.inf101.sem2.constants.sprites.SpritesPNG.*;
 import java.awt.Graphics;
 import no.uib.inf101.sem2.inGameObjects.GameObjects;
 import no.uib.inf101.sem2.inGameObjects.interfaces.DrawAndUpdate;
+import no.uib.inf101.sem2.main.Game;
+
 import static no.uib.inf101.sem2.constants.sprites.PlayerSprite.PlayerAction.*;
 
 
 public class GhostKing extends GameObjects implements DrawAndUpdate {
     private int ghostKingAction;
-    private final float X_OFFSET = GHOST_KING_WIDTH *1/2;
-    private final float Y_OFFSET = GHOST_KING_HEIGHT*1/4;
-    private final float WIDTH_OFFSET = - GHOST_KING_WIDTH*2/3;
-    private final float HEIGHT_OFFSET = - GHOST_KING_HEIGHT * 1/2;
-    public final float GHOST_KING_SPEED = 10;
-    //private float xSpeed;
     private boolean retreat = false;
-    private boolean isScreaming = false;
+    
     
     public GhostKing(float x, float y, float width, float height, Game game) {
         super(x, y, width, height, game);
@@ -38,44 +32,45 @@ public class GhostKing extends GameObjects implements DrawAndUpdate {
     @Override
     public void update() {
         updatePosition();
-        System.out.println(ghostKingAction);
         updateHitbox(X_OFFSET, Y_OFFSET, WIDTH_OFFSET, HEIGHT_OFFSET);
-        updateAnimationTick(5, ghostKingSpriteSize(ghostKingAction));  
-        if(isScreaming) {
-            game.activeGame().getPlayer().setPlayerAction(SCREAMING);
-       }
+        updateAnimationTick(ANIMATION_SPEED, ghostKingSpriteSize(ghostKingAction));  
     }
 
     @Override
     public void updatePosition() {
         ghostKingAction = DEFAULT; 
+        hunt();
+        if(retreat) {
+            retreat();
+        }
+    }
+
+    private void hunt() {
         // if the player collides with a ghost, the ghostking moves forward
         for(Ghost ghost : game.activeGame().getGhostList()) {
-            if(ghost.collisionDetected(game.activeGame().getPlayer().getHitBox()) && !retreat) {
+            if(collisionDetected(game.activeGame().getPlayer().getHitBox(), ghost.getHitBox()) && !retreat) {
                 x += GHOST_KING_SPEED;
             }
         } 
        
         // if the ghostking collides with player, it enters retreat mode, and moves backwards
         // retreat mode ends when ghostking is at starting position
-       if(collisionDetected(game.activeGame().getPlayer().getHitBox()) && !game.activeGame().getLifeList().isEmpty()) {
-               
+       if(collisionDetected(game.activeGame().getPlayer().getHitBox(), this.hitBox) && !game.activeGame().getLifeList().isEmpty()) {
                 game.activeGame().getLifeList().remove(0);
                 retreat = true;
-                isScreaming = true;
+                game.activeGame().getPlayer().setIsScreaming(true); // player screams when it collides with ghost king
                 x -= GHOST_KING_SPEED;
         }
-        
-        if(retreat) {
-            x -= GHOST_KING_SPEED;
-            if(x <= GHOST_KING_X) {
-                x = GHOST_KING_X;
-                retreat = false;
-                isScreaming = false;
-            }
-        }
+    }
 
-     
+    private void retreat() {
+        // ghost king moves back to starting position
+        x -= GHOST_KING_SPEED;
+        if(x <= GHOST_KING_X) {
+            x = GHOST_KING_X;
+            retreat = false;
+            game.activeGame().getPlayer().setIsScreaming(false);
+        }
     }
 
 }

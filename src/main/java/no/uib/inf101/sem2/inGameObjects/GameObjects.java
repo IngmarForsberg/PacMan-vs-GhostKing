@@ -12,8 +12,8 @@ import no.uib.inf101.sem2.gamestates.ActiveGame;
 import no.uib.inf101.sem2.inGameObjects.ghosts.Ghost;
 import no.uib.inf101.sem2.inGameObjects.interfaces.Animations;
 import no.uib.inf101.sem2.inGameObjects.interfaces.HitBox;
-import no.uib.inf101.sem2.terrain.Ground;
-import no.uib.inf101.sem2.view.Game;
+import no.uib.inf101.sem2.inGameObjects.terrain.Ground;
+import no.uib.inf101.sem2.main.Game;
 
 public abstract class GameObjects implements HitBox, Animations{
     protected int animationTick, animationIndex;
@@ -67,6 +67,20 @@ public abstract class GameObjects implements HitBox, Animations{
         return hitBox;
     }
 
+    public boolean onGround(Rectangle2D.Float ground) {
+        if(hitBox.y + hitBox.height == ground.y) {
+            return true;
+        }
+        /* this.hitBox.y ++; // moves hitbox one down
+        // if hitbox intersects ground, player is on ground
+            if(collisionDetected(ground, this.hitBox)) {
+                hitBox.y--;
+                return true;
+            }
+        
+        hitBox.y--; */
+        return false;
+    } 
     
 
     
@@ -117,8 +131,8 @@ public abstract class GameObjects implements HitBox, Animations{
      * @param hitBoxx
      * @return true if a collision is detected, false otherwise
      */
-    public boolean collisionDetected(Rectangle2D.Float hitBoxx) {
-        if(this.hitBox.intersects(hitBoxx)) {
+    public boolean collisionDetected(Rectangle2D.Float hitBox1, Rectangle2D.Float hitBox2) {
+        if(hitBox1.intersects(hitBox2)) {
             return true;
         }
         return false;
@@ -162,6 +176,8 @@ public abstract class GameObjects implements HitBox, Animations{
     public void setHeight(float heigth) {
         this.height = heigth;
     }
+
+    
 
 
     

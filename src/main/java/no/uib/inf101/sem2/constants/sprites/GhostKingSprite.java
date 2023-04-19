@@ -2,11 +2,8 @@ package no.uib.inf101.sem2.constants.sprites;
 
 public class GhostKingSprite {
     public static class GhostKingAction {
-        //id for each animations, index
-        
+        // index of the animation array
         public static final int DEFAULT = 0;
-    
-
     
         //amount of sprites per animation
         public static int ghostKingSpriteSize(int ghostKingAction) {

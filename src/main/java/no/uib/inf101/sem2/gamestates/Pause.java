@@ -10,9 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import static no.uib.inf101.sem2.estethics.Fonts.*;
 
-import no.uib.inf101.sem2.view.Game;
+import no.uib.inf101.sem2.inGameObjects.interfaces.StateMethods;
+import no.uib.inf101.sem2.main.Game;
 
-import static no.uib.inf101.sem2.constants.ObjectConstants.ObjectDimensions.*;
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 
 
 public class Pause extends State implements StateMethods { 
@@ -46,10 +47,5 @@ public class Pause extends State implements StateMethods {
     
     }
 
-    @Override
-    public void render(Graphics g) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
-    }
     
 }

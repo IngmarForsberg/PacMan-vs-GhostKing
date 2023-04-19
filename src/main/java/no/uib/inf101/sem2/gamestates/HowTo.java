@@ -7,10 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import no.uib.inf101.sem2.view.Game;
-import static no.uib.inf101.sem2.constants.ObjectConstants.ObjectDimensions.*;
+import no.uib.inf101.sem2.inGameObjects.interfaces.StateMethods;
+import no.uib.inf101.sem2.main.Game;
+
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
+import static no.uib.inf101.sem2.constants.Menu.MenuLayout.*;
 import static no.uib.inf101.sem2.estethics.Fonts.*;
-import static no.uib.inf101.sem2.ui.MenuButton.ButtonHitbox.*;
 import static no.uib.inf101.sem2.constants.sprites.SpritesPNG.*;
 
 public class HowTo extends State implements StateMethods {
@@ -49,7 +51,7 @@ public class HowTo extends State implements StateMethods {
           g2D.setColor(Color.BLACK);
           g2D.fill(canvas);
           g2D.setColor(Color.YELLOW);
-          Font font = customFont().deriveFont(20f);
+          Font font = customFont().deriveFont(8*SCALE);
           g2D.setFont(font);
           g.drawImage(backButton, BACK_X, BACK_Y, BACK_WIDTH, BACK_HEIGHT, null);
 
@@ -60,19 +62,13 @@ public class HowTo extends State implements StateMethods {
           for (String string : strings) {
             int stringWidth = g2D.getFontMetrics().stringWidth(string);
             //drawing the string in the middle position
-            g2D.drawString(string, (int)100, (int)120 + gapBetweenStrings);
-            //g2D.setFont(new Font("Verdana", Font.BOLD, 30));
-            gapBetweenStrings += 50;
+            g2D.drawString(string, (int)40*SCALE, (int)48*SCALE + gapBetweenStrings);
+            
+            gapBetweenStrings += 20*SCALE;
       
           }
         
        
-    }
-
-    @Override
-    public void render(Graphics g) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
     }
     
 }

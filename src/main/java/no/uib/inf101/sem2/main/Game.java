@@ -1,6 +1,4 @@
-package no.uib.inf101.sem2.view;
-import javax.swing.*;
-
+package no.uib.inf101.sem2.main;
 
 import no.uib.inf101.sem2.gamestates.ActiveGame;
 import no.uib.inf101.sem2.gamestates.GameOver;
@@ -8,14 +6,11 @@ import no.uib.inf101.sem2.gamestates.GameStates;
 import no.uib.inf101.sem2.gamestates.HowTo;
 import no.uib.inf101.sem2.gamestates.MenuState;
 import no.uib.inf101.sem2.gamestates.Pause;
-
 import java.awt.*;
+import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-
-
 
 
 public class Game{
@@ -31,8 +26,6 @@ public class Game{
     
     private Timer gameTimer;
     private GameStates gameState;
-
-    private static final float UPDATE_INTERVAL = 17; // gives FPS = 60
 
     public Game() {
         
@@ -54,13 +47,8 @@ public class Game{
         this.gameState = gameState;
     }
 
-
-
-   
-
     private void initGameStates() {
-        //gameState = GameStates.ACTIVE_GAME;
-
+        
         activeGame = new ActiveGame(this);
         gameOver = new GameOver(this);
         menu = new MenuState(this);
@@ -73,16 +61,10 @@ public class Game{
     public void update() {
         switch(GameStates.state) {
         case ACTIVE_GAME:
-
             activeGame.update();
-           
+                break;
+        default:
             break;
-
-        case GAME_OVER:
-            gameOver.update();
-                break;
-            default:
-                break;
            
         } 
     }
@@ -100,11 +82,11 @@ public class Game{
             howTo.draw(g);
             break;
         case PAUSE:
-            activeGame.render(g);
+            activeGame.draw(g);
             pause.draw(g);
             break;
         case ACTIVE_GAME:
-            activeGame.render(g);
+            activeGame.draw(g);
             break;
         case GAME_OVER:
             gameOver.draw(g);
@@ -122,17 +104,11 @@ public class Game{
         gameTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-
-                    
-                    
                 update();
-
-                
                 gamePanel.repaint();
 
             }
-        }, 0, (int) UPDATE_INTERVAL); //60 FPS
-
+        }, 0, UPDATE_INTERVAL); 
 
     }
     

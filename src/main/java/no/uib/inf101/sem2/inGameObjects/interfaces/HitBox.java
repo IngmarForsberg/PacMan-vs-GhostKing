@@ -5,10 +5,11 @@ import java.awt.geom.Rectangle2D;
 
 public interface HitBox {
 
+    /**
+     * initializes hitbox
+     */
     void initHitBox(float x, float y, float width, float height);
     
-    
-
     /**
      * gets hitbox
      * @return
@@ -34,12 +35,5 @@ public interface HitBox {
      */
     void drawHitBox(Graphics g);
 
-    /**
-     * detects the colission of two hitboxes and adjusts the position of entity
-     * @param hitBox
-     * @param xOffSet number of pixels from beginning of sprite to the animation actually starts, in x direction
-     * @param yOffSet number of pixels from beginning of sprite to the animation actually starts, in y direction
-     */
-    //void positionAfterCollision(Rectangle2D.Float hitBox, int xOffSet, int yOffSet);
     
 }
