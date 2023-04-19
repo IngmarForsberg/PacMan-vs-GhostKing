@@ -27,4 +27,5 @@ Vanskelighetsgrader:
 Spillet har 3 vanskelighetsgrader: easy, medium og hard.
 Etterhvert som du får høyere score, switcher spillet automatisk til en høyere vanskelighetsgrad. Da går spillet litt fortere for hver.
 
+Link til video: https://youtu.be/zjPXjVsL_f4
 
