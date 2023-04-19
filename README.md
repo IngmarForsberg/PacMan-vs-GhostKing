@@ -10,7 +10,7 @@ Målet er å komme lengst mulig. På veien er det små spøkelser som du må unn
 
 Kontroller:
 
-Du hopper med OPP-tasten eller SPACE og kryper med NED-tasten. 
+Du hopper med OPP-tasten eller SPACE og kryper med NED-tasten. Når du er i luften kan du trykke NED for å komme til bakken raskere. 
 
 Game Over:
 
@@ -27,5 +27,5 @@ Vanskelighetsgrader:
 Spillet har 3 vanskelighetsgrader: easy, medium og hard.
 Etterhvert som du får høyere score, switcher spillet automatisk til en høyere vanskelighetsgrad. Da går spillet litt fortere for hver.
 
-Link til video: https://youtu.be/zjPXjVsL_f4
+Link til video: https://youtu.be/PVFdMXmU3B0
 
