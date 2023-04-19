@@ -1,12 +1,8 @@
 package no.uib.inf101.sem2.constants;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import static no.uib.inf101.sem2.constants.sprites.SpritesPNG.*;
+
 import static no.uib.inf101.sem2.constants.InGameObjects.DimensionsAndSpeeds.*;
 
-
-import no.uib.inf101.sem2.gamestates.GameStates;
 
 public class Menu {
     public static class MenuLayout {
@@ -64,12 +60,6 @@ public class Menu {
         public static final int PACMAN_MENU_Y = (int)(60*SCALE);
         public static final int GHOST_KING_MENU_X = (int)(SCALE*250);
         public static final int GHOST_KING_MENU_Y = (int)(35*SCALE);
-
-        
-       
-    
-
-        
 
     }
     

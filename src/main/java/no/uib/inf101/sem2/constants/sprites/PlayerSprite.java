@@ -5,7 +5,7 @@ public class PlayerSprite {
     // enums ? 
     
     public static class PlayerAction {
-        //id for each animations, index
+        // index of animation array
         public static final int RUNNING = 0;
         public static final int CROUCHING = 1;
         public static final int JUMPING = 2;

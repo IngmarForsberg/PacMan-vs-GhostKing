@@ -2,7 +2,7 @@ package no.uib.inf101.sem2.constants.sprites;
 
 public class ItemSprite {
     public static class ItemType {
-        //id for each animations, index
+        // index of animation array
         
         public static final int COIN  = 0;
         public static final int ROCKET = 1;

@@ -8,6 +8,7 @@ import no.uib.inf101.sem2.inGameObjects.interfaces.DrawAndUpdate;
 import no.uib.inf101.sem2.main.Game;
 
 public class Ground extends GameObjects implements DrawAndUpdate{
+    
     public Ground(float x, float y, float width, float height, Game game) {
         super(x, y, width, height, game);
         initHitBox(x, y, width, height); 

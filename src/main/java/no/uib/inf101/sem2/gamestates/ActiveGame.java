@@ -240,6 +240,7 @@ public class ActiveGame extends State implements StateMethods {
        for(Ghost ghost : ghostList) {
             if(ghost.getX() + GHOST_WIDTH < 0) {
                 ghost.setX(lastGhost.getX() + randomXPosition(GHOST_MAX_X, GHOST_MIN_X));
+                ghost.setY(randomGhostYPosition());
                 lastGhost = ghost;
             }
         }

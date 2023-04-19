@@ -2,7 +2,7 @@ package no.uib.inf101.sem2.constants.sprites;
 
 public class GhostSprite {
     public static class GhostColors {
-        //id for each animations, index
+        // index of the animation array
         
         public static final int GREEN  = 0;
         public static final int PINK = 1;

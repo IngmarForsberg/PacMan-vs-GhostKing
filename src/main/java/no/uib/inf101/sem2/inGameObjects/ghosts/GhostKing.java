@@ -55,11 +55,14 @@ public class GhostKing extends GameObjects implements DrawAndUpdate {
        
         // if the ghostking collides with player, it enters retreat mode, and moves backwards
         // retreat mode ends when ghostking is at starting position
-       if(collisionDetected(game.activeGame().getPlayer().getHitBox(), this.hitBox) && !game.activeGame().getLifeList().isEmpty()) {
-                game.activeGame().getLifeList().remove(0);
-                retreat = true;
-                game.activeGame().getPlayer().setIsScreaming(true); // player screams when it collides with ghost king
-                x -= GHOST_KING_SPEED;
+       if(collisionDetected(game.activeGame().getPlayer().getHitBox(), this.hitBox)) {
+            if(!retreat) {
+                 game.activeGame().getLifeList().remove(0);
+            }
+               
+            retreat = true;
+            game.activeGame().getPlayer().setIsScreaming(true); // player screams when it collides with ghost king
+            x -= GHOST_KING_SPEED;
         }
     }
 
